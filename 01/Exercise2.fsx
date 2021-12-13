@@ -4,16 +4,16 @@
 open Common
 
 let countIncreases (values: int[] list) =
-    let rec loop (count, previous) list =
+    let rec loop (count, previousWindow) list =
         match list with
         | [] -> count
-        | window::remaining ->
-            let previousWindowSum = Array.sum previous
-            let currentWindowSum = Array.sum window
+        | currentWindow::remaining ->
+            let previousWindowSum = Array.sum previousWindow
+            let currentWindowSum = Array.sum currentWindow
             if currentWindowSum > previousWindowSum then
-                loop (count + 1, window) remaining
+                loop (count + 1, currentWindow) remaining
             else
-                loop (count, window) remaining
+                loop (count, currentWindow) remaining
 
     loop (0, List.head values) values
 
