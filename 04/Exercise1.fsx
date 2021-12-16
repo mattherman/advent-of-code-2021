@@ -36,8 +36,13 @@ let parseBingoInput lines =
         |> List.tail
         |> List.filter (fun l -> l <> "")
         |> List.map parseBoardLine
-        |> List.windowed 5 // TODO - this doesn't actually split the list
+        |> List.chunkBySize 5
     { Numbers = numbers; Boards = boards; CalledNumbers = [] }
+
+let getUnmarkedNumbers (calledNumbers: int list) (board: Board) =
+    board
+    |> List.concat
+    |> List.except calledNumbers
 
 let isWinningBoard (calledNumbers: int list) (board: Board) =
     let completedSets (sets: int list list) =
@@ -95,8 +100,15 @@ let startGame (initialState: BingoState) =
 let lastNumberCalled (state: BingoState) =
     List.head state.CalledNumbers
 
-let calculateScore finalNumber (winningBoards: Board list) =
-    0 // TODO
+let calculateScore (finalState: BingoState) (winningBoard: Board) =
+    let sumOfUnmarkedNumbers =
+        winningBoard
+        |> getUnmarkedNumbers finalState.CalledNumbers
+        |> List.sum
+
+    let finalNumber = lastNumberCalled finalState
+
+    finalNumber * sumOfUnmarkedNumbers
 
 let solve () =
     let input = readInput "input.txt"
@@ -104,7 +116,7 @@ let solve () =
     let result = startGame initialState
     match result with
     | Some (finalState, winningBoards) ->
-        calculateScore (lastNumberCalled finalState) winningBoards
+        calculateScore finalState (List.head winningBoards)
     | None ->
         0
 
