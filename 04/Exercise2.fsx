@@ -87,15 +87,19 @@ let callNextNumber (state: BingoState) =
         None
 
 let startGame (initialState: BingoState) =
+    let mutable count = 0
     let rec play (state: BingoState) =
         callNextNumber state
-        |> Option.bind(fun newState ->
-            let winningBoards = getWinningBoards newState.CalledNumbers (newState.Boards |> List.except newState.CompletedBoards)
-            let updatedState = { newState with CompletedBoards = newState.CompletedBoards @ winningBoards }
-            if updatedState.CompletedBoards.Length = updatedState.Boards.Length then
+        |> Option.bind(fun state ->
+            count <- count + 1
+            let winningBoards = getWinningBoards state.CalledNumbers state.Boards
+            let remainingBoards = state.Boards |> List.except winningBoards
+            let updatedState = { state with CompletedBoards = state.CompletedBoards @ winningBoards; Boards = remainingBoards }
+            printfn "%d: %A" count updatedState
+            if updatedState.Boards.Length = 0 then
                 Some (updatedState, winningBoards)
             else
-                play newState)
+                play updatedState)
 
     play initialState
 
