@@ -22,6 +22,9 @@ let sortPair (first, second) =
     else
         (first, second)
 
+// Returns values from `first` to `second`, preserving order.
+// For example, `(1,3)` would yield `[1;2;3]` while `(3,1)` woulc
+// yield [3;2;1]
 let getOrderedSequence (first, second) =
     let (low, high) = sortPair (first, second)
     let sequence = seq { low .. high }
@@ -62,11 +65,9 @@ let getAllDiagonalPoints (line: VentLine) =
 let getAllOrthogonalPoints (line: VentLine) =
     let (x1, y1) = line.Start
     let (x2, y2) = line.End
-    let (lowX, highX) = sortPair (x1, x2)
-    let (lowY, highY) = sortPair (y1, y2)
     seq {
-        for x in lowX .. highX do
-            for y in lowY .. highY do
+        for x in getOrderedSequence (x1, x2) do
+            for y in getOrderedSequence (y1, y2) do
                 yield (x, y)
     }
 
