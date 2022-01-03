@@ -4,8 +4,8 @@
 
 open Common
 
-let solve () =
+let solve file =
     0
 
-let solution = solve ()
+let solution = solve "test_input.txt"
 printfn "%d" solution
